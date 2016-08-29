@@ -33,5 +33,11 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleBench\SimpleBench.csproj">
+      <Project>{ABC6F2C6-DA1C-44AA-BD1A-0DA94F6C3D50}</Project>
+      <Name>SimpleBench</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

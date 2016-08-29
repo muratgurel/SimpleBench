@@ -86,7 +86,7 @@ namespace SimpleBench.Runner
 						measures.Add(stopWatch.ElapsedTicks);
 					}
 
-					Console.WriteLine("Avg: {0}, Min: {1}, Max: {2}", measures.Average(), measures.Min(), measures.Max());
+					Console.WriteLine("Avg: {0}, Min: {1}, Max: {2}, Std: {3}", measures.Average(), measures.Min(), measures.Max(), Reporting.CalculateStdDev(measures));
 					Console.WriteLine("------");
 
 					benchmark.CleanUp();

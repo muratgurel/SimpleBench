@@ -21,10 +21,25 @@ namespace SimpleBench.Runner
 			{
 				optionSet.Parse(args);
 
+				if (string.IsNullOrEmpty(dllPath))
+				{
+					throw new ArgumentNullException(nameof(dllPath), "You should pass the benchmark dll with --dll=PATH option");
+				}
+
+				if (!dllPath.EndsWith(".dll", StringComparison.Ordinal))
+				{
+					dllPath += ".dll";
+				}
+
 				Console.WriteLine("DLL Path: " + dllPath);
 				Console.WriteLine("Out Path: " + outPath);
 			}
 			catch (OptionException e)
+			{
+				Console.WriteLine(e.Message);
+				return;
+			}
+			catch (ArgumentNullException e)
 			{
 				Console.WriteLine(e.Message);
 				return;

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using Mono.Options;
 
 namespace SimpleBench.Runner
@@ -40,6 +42,18 @@ namespace SimpleBench.Runner
 				{
 					Console.WriteLine("DLL Path: " + dllPath);
 					Console.WriteLine("Out Path: " + outPath);	
+				}
+
+				Assembly benchmarkAssembly = Assembly.LoadFile(dllPath);
+
+				var instances = benchmarkAssembly.GetTypes()
+				                                 .Where(t => t.GetInterfaces().Contains(typeof(IBenchmark)) && 
+				                                        t.GetConstructor(Type.EmptyTypes) != null)
+				                                 .Select(t => Activator.CreateInstance(t) as IBenchmark);
+
+				foreach (var instance in instances)
+				{
+					
 				}
 			}
 			catch (OptionException e)

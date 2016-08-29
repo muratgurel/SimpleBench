@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -51,10 +53,47 @@ namespace SimpleBench.Runner
 														t.GetConstructor(Type.EmptyTypes) != null)
 				                                  .Select(t => Activator.CreateInstance(t) as IBenchmark);
 
+				var stopWatch = new Stopwatch();
+
 				foreach (var benchmark in benchmarks)
 				{
-					
+					Console.WriteLine("\n------");
+					Console.WriteLine(benchmark.GetType());
+
+					benchmark.SetUp();
+
+					int iterations = 1;
+
+					MethodBase runMethod = benchmark.GetType().GetMethod("Run");
+					IterationsAttribute attr = runMethod.GetCustomAttributes(typeof(IterationsAttribute), true).FirstOrDefault() as IterationsAttribute;
+
+					if (attr != null)
+					{
+						iterations = attr.value;
+					}
+
+					Console.WriteLine("Number of iterations: " + iterations);
+
+					var measures = new List<double>();
+
+					for (int i = 0; i < iterations; i++)
+					{
+						stopWatch.Reset();
+						stopWatch.Start();
+						benchmark.Run();
+						stopWatch.Stop();
+
+						measures.Add(stopWatch.ElapsedTicks);
+					}
+
+					Console.WriteLine("Avg: {0}, Min: {1}, Max: {2}", measures.Average(), measures.Min(), measures.Max());
+					Console.WriteLine("------");
+
+					benchmark.CleanUp();
 				}
+
+				// For cosmetic reasons
+				Console.WriteLine("");
 			}
 			catch (OptionException e)
 			{

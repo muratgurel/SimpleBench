@@ -54,11 +54,14 @@ namespace SimpleBench.Runner
 				                                  .Select(t => Activator.CreateInstance(t) as IBenchmark);
 
 				var stopWatch = new Stopwatch();
+				var benchmarkResults = new Dictionary<string, List<Double>>();
 
 				foreach (var benchmark in benchmarks)
 				{
+					string benchmarkName = benchmark.GetType().ToString();
+
 					Console.WriteLine("\n------");
-					Console.WriteLine(benchmark.GetType());
+					Console.WriteLine(benchmarkName);
 
 					benchmark.SetUp();
 
@@ -90,10 +93,42 @@ namespace SimpleBench.Runner
 					Console.WriteLine("------");
 
 					benchmark.CleanUp();
+
+					benchmarkResults.Add(benchmarkName, measures);
 				}
 
 				// For cosmetic reasons
 				Console.WriteLine("");
+
+				string csvBody = "";
+				csvBody += benchmarkResults.Keys.Aggregate(";", (seed, benchmarkName) => seed + benchmarkName + ";");
+				csvBody = csvBody.Substring(0, csvBody.Length - 1); // Remove last ';'
+				csvBody += "\n";
+
+				int benchmarkCount = benchmarkResults.Keys.Count;
+				int maxIterations = benchmarkResults.Values.Select(measures => measures.Count).Max();
+
+				for (int i = 0; i < maxIterations; i++)
+				{
+					string row = string.Format("{0}", i);
+
+					foreach (var benchmarkName in benchmarkResults.Keys)
+					{
+						List<double> measures = benchmarkResults[benchmarkName];
+						if (measures.Count > i)
+						{
+							row += string.Format(";{0}", measures[i]);
+						}
+						else
+						{
+							row += ";";
+						}
+					}
+
+					csvBody += string.Format("{0}\n", row);
+				}
+
+				File.WriteAllText(outPath + "out.csv", csvBody);
 			}
 			catch (OptionException e)
 			{

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace SimpleBench.Runner
@@ -16,6 +17,31 @@ namespace SimpleBench.Runner
 			}
 
 			return 0;
+		}
+
+		public static StringWriter ExportCSV(IEnumerable<BenchmarkResult> results)
+		{
+			var sWriter = new StringWriter();
+
+			sWriter.WriteLine(results.Aggregate("", (seed, result) => ";" + seed + result.name));
+
+			int maxIterations = results.Select(br => br.measures.Count).Max();
+
+			for (int i = 0; i < maxIterations; i++)
+			{
+				sWriter.Write(i);
+
+				foreach (var r in results)
+				{
+					List<double> measures = r.measures;
+					sWriter.Write(string.Format(";{0}", (measures.Count > i) ? measures[i].ToString() : ""));
+				}
+
+				sWriter.Write("\n");
+			}
+
+			sWriter.Flush();
+			return sWriter;
 		}
 	}
 }

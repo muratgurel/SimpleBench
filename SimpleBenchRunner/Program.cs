@@ -100,37 +100,9 @@ namespace SimpleBench.Runner
 				// For cosmetic reasons
 				Console.WriteLine("");
 
-				IEnumerable<string> benchmarkNames = benchmarkResults.Select(br => br.name);
-
-				string csvBody = "";
-				csvBody += benchmarkNames.Aggregate(";", (seed, benchmarkName) => seed + benchmarkName + ";");
-				csvBody = csvBody.Substring(0, csvBody.Length - 1); // Remove last ';'
-				csvBody += "\n";
-
-				int benchmarkCount = benchmarkResults.Count;
-				int maxIterations = benchmarkResults.Select(br => br.measures.Count).Max();
-
-				for (int i = 0; i < maxIterations; i++)
-				{
-					string row = string.Format("{0}", i);
-
-					foreach (var benchmarkResult in benchmarkResults)
-					{
-						List<double> measures = benchmarkResult.measures;
-						if (measures.Count > i)
-						{
-							row += string.Format(";{0}", measures[i]);
-						}
-						else
-						{
-							row += ";";
-						}
-					}
-
-					csvBody += string.Format("{0}\n", row);
-				}
-
-				File.WriteAllText(outPath + "out.csv", csvBody);
+				StringWriter sWriter = Reporting.ExportCSV(benchmarkResults);
+				File.WriteAllText(outPath + "out.csv", sWriter.ToString());
+				sWriter.Close();
 			}
 			catch (OptionException e)
 			{

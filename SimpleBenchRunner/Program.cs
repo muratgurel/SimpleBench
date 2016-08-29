@@ -46,12 +46,12 @@ namespace SimpleBench.Runner
 
 				Assembly benchmarkAssembly = Assembly.LoadFile(dllPath);
 
-				var instances = benchmarkAssembly.GetTypes()
-				                                 .Where(t => t.GetInterfaces().Contains(typeof(IBenchmark)) && 
-				                                        t.GetConstructor(Type.EmptyTypes) != null)
-				                                 .Select(t => Activator.CreateInstance(t) as IBenchmark);
+				var benchmarks = benchmarkAssembly.GetTypes()
+				                                  .Where(t => t.GetInterfaces().Contains(typeof(IBenchmark)) &&
+														t.GetConstructor(Type.EmptyTypes) != null)
+				                                  .Select(t => Activator.CreateInstance(t) as IBenchmark);
 
-				foreach (var instance in instances)
+				foreach (var benchmark in benchmarks)
 				{
 					
 				}

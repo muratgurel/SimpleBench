@@ -54,7 +54,7 @@ namespace SimpleBench.Runner
 				                                  .Select(t => Activator.CreateInstance(t) as IBenchmark);
 
 				var stopWatch = new Stopwatch();
-				var benchmarkResults = new Dictionary<string, List<Double>>();
+				var benchmarkResults = new Dictionary<string, List<double>>();
 
 				foreach (var benchmark in benchmarks)
 				{

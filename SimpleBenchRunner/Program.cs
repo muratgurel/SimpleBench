@@ -54,7 +54,7 @@ namespace SimpleBench.Runner
 				                                  .Select(t => Activator.CreateInstance(t) as IBenchmark);
 
 				var stopWatch = new Stopwatch();
-				var benchmarkResults = new Dictionary<string, List<double>>();
+				var benchmarkResults = new List<BenchmarkResult>();
 
 				foreach (var benchmark in benchmarks)
 				{
@@ -94,27 +94,29 @@ namespace SimpleBench.Runner
 
 					benchmark.CleanUp();
 
-					benchmarkResults.Add(benchmarkName, measures);
+					benchmarkResults.Add(new BenchmarkResult(benchmarkName, measures));
 				}
 
 				// For cosmetic reasons
 				Console.WriteLine("");
 
+				IEnumerable<string> benchmarkNames = benchmarkResults.Select(br => br.name);
+
 				string csvBody = "";
-				csvBody += benchmarkResults.Keys.Aggregate(";", (seed, benchmarkName) => seed + benchmarkName + ";");
+				csvBody += benchmarkNames.Aggregate(";", (seed, benchmarkName) => seed + benchmarkName + ";");
 				csvBody = csvBody.Substring(0, csvBody.Length - 1); // Remove last ';'
 				csvBody += "\n";
 
-				int benchmarkCount = benchmarkResults.Keys.Count;
-				int maxIterations = benchmarkResults.Values.Select(measures => measures.Count).Max();
+				int benchmarkCount = benchmarkResults.Count;
+				int maxIterations = benchmarkResults.Select(br => br.measures.Count).Max();
 
 				for (int i = 0; i < maxIterations; i++)
 				{
 					string row = string.Format("{0}", i);
 
-					foreach (var benchmarkName in benchmarkResults.Keys)
+					foreach (var benchmarkResult in benchmarkResults)
 					{
-						List<double> measures = benchmarkResults[benchmarkName];
+						List<double> measures = benchmarkResult.measures;
 						if (measures.Count > i)
 						{
 							row += string.Format(";{0}", measures[i]);

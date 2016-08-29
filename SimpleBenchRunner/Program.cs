@@ -33,6 +33,9 @@ namespace SimpleBench.Runner
 					dllPath += ".dll";
 				}
 
+				dllPath = Path.GetFullPath(dllPath);
+				outPath = Path.GetFullPath(outPath);
+
 				if (isVerbose)
 				{
 					Console.WriteLine("DLL Path: " + dllPath);

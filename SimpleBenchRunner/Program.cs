@@ -104,6 +104,7 @@ namespace SimpleBench.Runner
 			}
 			catch (FileNotFoundException e)
 			{
+				// When DLL cannot be opened
 				Console.WriteLine(e.Message);
 				return;
 			}

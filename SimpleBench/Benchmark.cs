@@ -27,7 +27,7 @@ namespace SimpleBench
 			set;
 		}
 
-		private Stopwatch stopwatch;
+		private readonly Stopwatch stopwatch;
 
 		public Benchmark()
 		{

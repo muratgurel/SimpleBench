@@ -121,13 +121,15 @@ namespace SimpleBench
 						method.Invoke(fixture, new object[] { this });
 						Stop();
 
-						if (elapsedMilliseconds >= 1000)
+						if (elapsedMilliseconds < 1000)
+						{
+							N *= 10;
+						}
+						else
 						{
 							// Test finished
 							break;
 						}
-
-						N *= 10;
 					}
 				}
 
@@ -140,13 +142,15 @@ namespace SimpleBench
 						benchmarkFunction(this);
 						Stop();
 
-						if (elapsedMilliseconds >= 1000)
+						if (elapsedMilliseconds < 1000)
+						{
+							N *= 10;
+						}
+						else
 						{
 							// Test finished
 							break;
 						}
-
-						N *= 10;
 					}
 				}
 

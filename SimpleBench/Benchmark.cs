@@ -1,10 +1,24 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace SimpleBench
 {
 	public class Benchmark : IBenchmark
 	{
+		public int N
+		{
+			get;
+			set;
+		}
+
+		public string name
+		{
+			get;
+			private set;
+		}
+
 		public long elapsedMilliseconds
 		{
 			get
@@ -21,17 +35,36 @@ namespace SimpleBench
 			}
 		}
 
-		public int N
+		public List<Benchmark> innerBenchmarks
 		{
 			get;
-			set;
+			private set;
 		}
 
 		private readonly Stopwatch stopwatch;
 
-		public Benchmark()
+		// For doing fixture level benchmarks
+		private readonly object fixture;
+		private readonly MethodInfo method;
+
+		// For doing inner benchmarks
+		private readonly Action<IBenchmark> benchmarkFunction;
+
+		public Benchmark(string name, object fixture, MethodInfo method)
 		{
-			stopwatch = new Stopwatch();
+			this.name = name;
+			this.method = method;
+			this.fixture = fixture;
+			this.stopwatch = new Stopwatch();
+			this.innerBenchmarks = new List<Benchmark>();
+		}
+
+		private Benchmark(string name, Action<IBenchmark> benchmarkFunction)
+		{
+			this.name = name;
+			this.stopwatch = new Stopwatch();
+			this.benchmarkFunction = benchmarkFunction;
+			this.innerBenchmarks = new List<Benchmark>();
 		}
 
 		public void Reset()
@@ -39,9 +72,9 @@ namespace SimpleBench
 			stopwatch.Restart();
 		}
 
-		public void Run(Action<IBenchmark> innerBenchmark)
+		public void Run(string name, Action<IBenchmark> innerBenchmark)
 		{
-			throw new NotImplementedException();
+			innerBenchmarks.Add(new Benchmark(this.name + name, innerBenchmark));
 		}
 
 		public void Start()
@@ -52,6 +85,99 @@ namespace SimpleBench
 		public void Stop()
 		{
 			stopwatch.Stop();
+		}
+
+		public void SetUp()
+		{
+			if (method != null)
+			{
+				// Invoke the method once to collect any inner benchmarks it may have.
+				method.Invoke(fixture, new object[] { this });
+			}
+		}
+
+		public void DoBench()
+		{
+			if (innerBenchmarks.Count > 0)
+			{
+				// Bench inner ones
+				foreach (var innerBench in innerBenchmarks)
+				{
+					innerBench.N = 10;
+
+					innerBench.SetUp();
+					innerBench.DoBench();
+				}
+			}
+			else
+			{
+				if (method != null)
+				{
+					// Top level bench
+					do
+					{
+						Start();
+						method.Invoke(fixture, new object[] { this });
+						Stop();
+
+						N *= 10;
+					}
+					while (elapsedMilliseconds < 1000);
+				}
+
+				if (benchmarkFunction != null)
+				{
+					// Inner bench
+					do
+					{
+						Start();
+						benchmarkFunction(this);
+						Stop();
+
+						N *= 10;
+					}
+					while (elapsedMilliseconds < 1000);
+				}
+
+				Time time = GetTime(elapsedTicks / (double)N);
+				Console.WriteLine("{0}: {1} ops {2:F1} {3}/op", name, N, time.val, time.identifier);
+			}
+		}
+
+		private static Time GetTime(double ticks)
+		{
+			if (ticks < 10d)
+			{
+				// Nanoseconds
+				return new Time(ticks / 0.01d, "ns");
+			}
+
+			if (ticks < 10000d)
+			{
+				// Microseconds
+				return new Time(ticks / 10d, "μs");
+			}
+
+			if (ticks < 10000000d)
+			{
+				// Milliseconds
+				return new Time(ticks / 10000d, "ms");
+			}
+
+			// Seconds
+			return new Time(ticks / 10000000d, "s");
+		}
+
+		private struct Time
+		{
+			public double val;
+			public string identifier;
+
+			public Time(double val, string identifier)
+			{
+				this.val = val;
+				this.identifier = identifier;
+			}
 		}
 	}
 }

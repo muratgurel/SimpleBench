@@ -71,21 +71,11 @@ namespace SimpleBench.Runner
 
 					foreach (var method in benchmarkMethods)
 					{
-						var benchmark = new Benchmark();
+						var benchmark = new Benchmark(method.Name, fixture, method);
 						benchmark.N = 10;
 
-						do
-						{
-							benchmark.Start();
-							method.Invoke(fixture, new object[] { benchmark });
-							benchmark.Stop();
-
-							benchmark.N *= 10;
-						}
-						while (benchmark.elapsedMilliseconds < 1000);
-
-						Time time = GetTime(benchmark.elapsedTicks / (double)benchmark.N);
-						Console.WriteLine("{0}: {1} ops {2:F1} {3}/op", method.Name, benchmark.N, time.val, time.identifier);
+						benchmark.SetUp();
+						benchmark.DoBench();
 					}
 				}
 
@@ -107,42 +97,6 @@ namespace SimpleBench.Runner
 				// When DLL cannot be opened
 				Console.WriteLine(e.Message);
 				return;
-			}
-		}
-
-		private static Time GetTime(double ticks)
-		{
-			if (ticks < 10d)
-			{
-				// Nanoseconds
-				return new Time(ticks / 0.01d, "ns");
-			}
-
-			if (ticks < 10000d)
-			{
-				// Microseconds
-				return new Time(ticks / 10d, "μs");
-			}
-
-			if (ticks < 10000000d)
-			{
-				// Milliseconds
-				return new Time(ticks / 10000d, "ms");
-			}
-
-			// Seconds
-			return new Time(ticks / 10000000d, "s");
-		}
-
-		private struct Time
-		{
-			public double val;
-			public string identifier;
-
-			public Time(double val, string identifier)
-			{
-				this.val = val;
-				this.identifier = identifier;
 			}
 		}
 	}

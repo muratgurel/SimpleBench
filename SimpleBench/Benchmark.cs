@@ -114,29 +114,40 @@ namespace SimpleBench
 				if (method != null)
 				{
 					// Top level bench
-					do
+					// TODO: Add a fail case, like a max N
+					while (true)
 					{
 						Start();
 						method.Invoke(fixture, new object[] { this });
 						Stop();
 
+						if (elapsedMilliseconds >= 1000)
+						{
+							// Test finished
+							break;
+						}
+
 						N *= 10;
 					}
-					while (elapsedMilliseconds < 1000);
 				}
 
 				if (benchmarkFunction != null)
 				{
 					// Inner bench
-					do
+					while (true)
 					{
 						Start();
 						benchmarkFunction(this);
 						Stop();
 
+						if (elapsedMilliseconds >= 1000)
+						{
+							// Test finished
+							break;
+						}
+
 						N *= 10;
 					}
-					while (elapsedMilliseconds < 1000);
 				}
 
 				Time time = GetTime(elapsedTicks / (double)N);

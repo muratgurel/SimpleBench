@@ -35,8 +35,6 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Benchmark.cs" />
-    <Compile Include="IBenchmark.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SimpleBench\SimpleBench.csproj">

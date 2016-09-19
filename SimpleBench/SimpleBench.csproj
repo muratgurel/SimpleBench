@@ -34,7 +34,6 @@
     <Compile Include="IBenchmark.cs" />
     <Compile Include="BenchmarkAttribute.cs" />
     <Compile Include="BenchmarkFixtureAttribute.cs" />
-    <Compile Include="Benchmark.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

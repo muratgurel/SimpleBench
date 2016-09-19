@@ -2,6 +2,12 @@
 
 namespace SimpleBench
 {
+	/// <summary>
+	/// This interface is used in benchmark methods marked with
+	/// [Benchmark] attribute. The runner passes a benchmark object
+	/// as the parameter of the benchmark method, so the user can
+	/// Reset benchmark timer or run sub-benchmarks with Run method.
+	/// </summary>
 	public interface IBenchmark
 	{
 		/// <summary>
@@ -20,16 +26,6 @@ namespace SimpleBench
 		/// timer jsut before you run the actual function that you will benchmark.
 		/// </summary>
 		void Reset();
-
-		/// <summary>
-		/// Call this before starting any benchmarks!
-		/// </summary>
-		void SetUp();
-
-		/// <summary>
-		/// Do the benchmark.
-		/// </summary>
-		void DoBench();
 
 		/// <summary>
 		/// You can run inner benchmarks inside your main benchmark function.

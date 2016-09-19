@@ -151,7 +151,7 @@ namespace SimpleBench
 				}
 
 				Time time = GetTime(elapsedTicks / (double)N);
-				Console.WriteLine("{0}: {1} ops {2:F1} {3}/op", name, N, time.val, time.identifier);
+				Console.WriteLine("{0}: {1:N0} ops {2:F1} {3}/op", name, N, time.val, time.identifier);
 			}
 		}
 

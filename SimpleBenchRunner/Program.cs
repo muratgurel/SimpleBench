@@ -75,7 +75,7 @@ namespace SimpleBench.Runner
 						benchmark.N = 10;
 
 						benchmark.SetUp();
-						benchmark.DoBench();
+						benchmark.DoBench(isVerbose);
 					}
 				}
 

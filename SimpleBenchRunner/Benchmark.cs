@@ -96,7 +96,7 @@ namespace SimpleBench
 			}
 		}
 
-		public void DoBench()
+		public void DoBench(bool verbose)
 		{
 			if (innerBenchmarks.Count > 0)
 			{
@@ -106,7 +106,7 @@ namespace SimpleBench
 					innerBench.N = 10;
 
 					innerBench.SetUp();
-					innerBench.DoBench();
+					innerBench.DoBench(verbose);
 				}
 			}
 			else
@@ -123,6 +123,12 @@ namespace SimpleBench
 
 						if (elapsedMilliseconds < 1000)
 						{
+							if (verbose)
+							{
+								Time stepTime = GetTime(elapsedTicks / (double)N);
+								Console.WriteLine("{0}: {1:N0} ops {2:F1} {3}/op", name, N, stepTime.val, stepTime.identifier);
+							}
+
 							N *= 10;
 						}
 						else
@@ -144,6 +150,12 @@ namespace SimpleBench
 
 						if (elapsedMilliseconds < 1000)
 						{
+							if (verbose)
+							{
+								Time stepTime = GetTime(elapsedTicks / (double)N);
+								Console.WriteLine("{0}: {1:N0} ops {2:F1} {3}/op", name, N, stepTime.val, stepTime.identifier);
+							}
+
 							N *= 10;
 						}
 						else
